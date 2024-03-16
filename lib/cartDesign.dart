@@ -45,6 +45,7 @@ class _cartState extends State<cart> {
           loadedCartItems.add({
             'book': item['book'].toString(),
             'total': item['total'].toString(),
+            'rate': item['rate'].toString(),
             'quantity': item['quantity'].toString(),
             'genre': item['genre'].toString(),
             'author': item['author'].toString(),
@@ -93,7 +94,7 @@ class _cartState extends State<cart> {
                             cartItems[index]['book'],
                             cartItems[index]['genre'],
                             cartItems[index]['author'],
-                            cartItems[index]['total'],
+                            cartItems[index]['rate'],
                           ),
                           back: _buildCard2(
                             cartItems[index]['phone'],
@@ -128,7 +129,7 @@ class _cartState extends State<cart> {
                           ),
                         ),
                         child: Text(
-                          'Confirm',
+                          'Total: ${cartItems.isNotEmpty ? cartItems[0]['total'] ?? '0' : '0'}',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
