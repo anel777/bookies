@@ -1,0 +1,31 @@
+{% extends 'Admin/adminindex.html' %}
+{% block body %}
+
+<body>
+<form id="form1" name="form1" method="post" action="">
+  <table width="511" border="1" class="table table-striped table-dark">
+    <tr>
+      <td colspan="5"><div align="center">Bookstall 
+      </div>
+        <label>
+
+      </label></td>
+    </tr>
+    <tr>
+      <td width="96">Offers</td>
+      <td width="70"><p>Offer Details </p>      </td>
+      <td width="65">Offer Period</td>
+    </tr>
+      {% for i in val %}
+    <tr>
+      <td height="114">{{ i.offers }}&nbsp;</td>
+      <td> {{ i.offerDetails }}</td>
+      <td>{{ i.offerPeriod }}</td>
+    </tr>
+      {% endfor %}
+  </table>
+</form>
+</body>
+
+{% endblock %}
+

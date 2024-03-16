@@ -1,0 +1,67 @@
+{% extends 'Admin/adminindex.html' %}
+{% block body %}
+     <head>
+        <style>
+            .dark-striped-tables {
+  background-color: #2c3034; /* Dark background color */
+  border-radius: 20px; /* Rounded corners */
+  overflow: hidden; /* Hide the border-collapse separator */
+}
+
+.dark-striped-table th,
+.dark-striped-table td {
+  border: 10px solid #ffffff;
+  padding: 10px; /* Adjust padding as needed */
+  color: #FFFFFF;; /* Text color */
+}
+
+.dark-striped-table tbody tr:nth-child(odd) {
+  background-color: #2c3036; /* Striped background color for odd rows */
+}
+        </style>
+    </head>
+
+<body>
+<form id="form1" name="form1" method="post" action="/writingTable">
+  <table width="817" border="1" class="table dark-striped-tables table-striped table-dark">
+    <tr>
+      <td colspan="7"><div align="center">Bookstall
+      </div>
+        <label>
+        <div align="center"><label>
+          <input name="select" placeholder="Book Name" type="text" class="form-control"> </label> <label>
+          <input type="submit" name="Submit" value="Search"  class="btn btn-primary"></label>
+          </div>
+      </label></td>
+    </tr>
+    <tr>
+      <td width="136">Book Name </td>
+      <td width="143">Author</td>
+      <td width="109">Details</td>
+      <td width="78">Reviews</td>
+      <td width="62">Rating</td>
+      <td width="104">Date </td>
+      <td width="139">Username </td>
+    </tr>
+  {% for i in val %}
+    <tr>
+      <td height="71">&nbsp;{{ i.BOOK.name }}</td>
+      <td>{{ i.BOOK.author }}</td>
+      <td>genre:{{ i.BOOK.genre }}
+      <br>
+          rate:{{ i.BOOK.rate }}
+            <br>
+          stock:{{ i.BOOK.stock }}
+      </td>
+      <td>{{ i.review }}</td>
+      <td>{{ i.rating }}</td>
+      <td>{{ i.date }}&nbsp;</td>
+      <td>{{ i.USER.name }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+</form>
+</body>
+
+{% endblock %}
+

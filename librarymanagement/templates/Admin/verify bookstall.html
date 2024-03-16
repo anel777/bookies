@@ -1,0 +1,68 @@
+{% extends 'Admin/adminindex.html' %}
+{% block body %}
+
+       <head>
+        <style>
+            .dark-striped-tables {
+  background-color: #2c3034; /* Dark background color */
+  border-radius: 20px; /* Rounded corners */
+  overflow: hidden; /* Hide the border-collapse separator */
+}
+
+.dark-striped-table th,
+.dark-striped-table td {
+  border: 10px solid #ffffff;
+  padding: 10px; /* Adjust padding as needed */
+  color: #FFFFFF;; /* Text color */
+}
+
+.dark-striped-table tbody tr:nth-child(odd) {
+  background-color: #2c3036; /* Striped background color for odd rows */
+}
+        </style>
+    </head>
+
+<body>
+<form id="form1" name="form1" method="post" action="/searchBookstall">
+  <table width="1206" border="1" class="table dark-striped-tables table-striped table-dark">
+    <tr>
+      <td colspan="8"><label>
+        <input type="text" placeholder="Name" name="textfield8" class="form-control"/>
+        <input type="submit" name="Submit" value="search" class = "btn btn-primary" />
+      </label></td>
+    </tr>
+    <tr>
+      <td width="144">Name </td>
+      <td width="144">Owner </td>
+      <td width="144">Phone  </td>
+      <td width="144">Email</td>
+      <td width="144">Photo</td>
+      <td width="144">Post</td>
+      <td width="144">Pin</td>
+      <td width="146">&nbsp;</td>
+    </tr>
+
+       {% for i in val %}<tr>
+
+      <td>{{ i.name }}</td>
+      <td> {{ i.ownerName }}</td>
+      <td> {{ i.phone }}</td>
+      <td> {{ i.email }} </td>
+      <td><img src="{{ i.photo.url }}" width="100" height="100"/> </td>
+      <td> {{ i.post }}</td>
+      <td> {{ i.pin }}</td>
+      <td><p>
+          {% if i.LOGIN.type == 'pending' %}
+          <a href="acceptBookstall/{{ i.LOGIN.id }}" class="btn btn-outline-success">Accept </a></p>
+          <p><a href="rejectBookstall/{{ i.LOGIN.id }}" class="btn btn-outline-danger">Reject</a></p>
+          {% elif i.LOGIN.type == 'bookstall' %}
+           <p class="btn btn-outline-success">ACCEPTED</p>
+          {% else %}
+           <p class="btn btn-outline-success">REJECTED</p>
+          {% endif %}
+        </td></tr>
+      {% endfor %}
+  </table>
+</form>
+</body>
+{% endblock %}

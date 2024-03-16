@@ -1,0 +1,59 @@
+{% extends 'Library/libraryindex.html' %}
+{% block body %}
+
+     <head>
+        <style>
+            .dark-striped-tables {
+  background-color: #2c3034; /* Dark background color */
+  border-radius: 20px; /* Rounded corners */
+  overflow: hidden; /* Hide the border-collapse separator */
+}
+
+.dark-striped-table th,
+.dark-striped-table td {
+  border: 10px solid #ffffff;
+  padding: 10px; /* Adjust padding as needed */
+  color: #FFFFFF;; /* Text color */
+}
+
+.dark-striped-table tbody tr:nth-child(odd) {
+  background-color: #2c3036; /* Striped background color for odd rows */
+}
+        </style>
+    </head>
+
+
+<body>
+<form id="form1" name="form1" method="post" action="/issueBooks_issue">
+  <table width="200" border="1" class="table dark-striped-tables table-striped table-dark">
+    <tr>
+      <td>Users</td>
+      <td><label>
+        <select name="select" class="form-control-sm">
+            {% for i in val %}
+                <option value="{{ i.id }}">{{ i.name }}</option>
+            {% endfor %}
+        </select>
+      </label></td>
+    </tr>
+    <tr>
+        <td><label>Return Date : </label></td> <td> <input type="date" name = "rDate" class="form-control-sm"> </td>
+    </tr>
+    <tr>
+        <td><label>Fine amount : </label> </td><td><input placeholder="Fine" text" name ="fine" class = "form-control-sm"> </td></tr>
+    </tr><tr>
+      <td><label>Book Number : </label> </td><td><select  name ="bkno" class="form-control-sm">
+       {% for i in bno %}
+      <option value="{{ i.id }}"> {{ i.bookId }}</option>
+      {% endfor %}
+      </select></td></tr>
+    </tr>
+    <tr>
+      <td colspan="2" align = "center"><label>
+        <input type="submit" name="Submit" value="ISSUE" class="btn btn-outline-warning">
+      </label></td>
+    </tr>
+  </table>
+</form>
+</body>
+{% endblock %}

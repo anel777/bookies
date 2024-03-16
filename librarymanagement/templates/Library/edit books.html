@@ -1,0 +1,67 @@
+{% extends 'Library/libraryindex.html' %}
+{% block body %}
+
+     <head>
+        <style>
+            .dark-striped-tables {
+  background-color: #2c3034; /* Dark background color */
+  border-radius: 20px; /* Rounded corners */
+  overflow: hidden; /* Hide the border-collapse separator */
+}
+
+.dark-striped-table th,
+.dark-striped-table td {
+  border: 10px solid #ffffff;
+  padding: 10px; /* Adjust padding as needed */
+  color: #FFFFFF;; /* Text color */
+}
+
+.dark-striped-table tbody tr:nth-child(odd) {
+  background-color: #2c3036; /* Striped background color for odd rows */
+}
+        </style>
+    </head>
+
+<body>
+<form id="form1" name="form1" method="post" action="/editBooksLib" enctype= "multipart/form-data">
+  <table width="200" border="1" class="table dark-striped-tables table-striped table-dark">
+    <tr>
+      <td>Name</td>
+      <td><label>
+        <input type="text" name="textfield"  value="{{ val.bookName }}"/>
+      </label></td>
+    </tr>
+    <tr>
+      <td>Genre</td>
+      <td><label>
+        <input type="text" name="textfield2" value = "{{ val.genre }}"/>
+      </label></td>
+    </tr>
+    <tr>
+      <td>Author</td>
+      <td><label>
+        <input type="text" name="textfield3"  value = "{{ val.author }}"/>
+      </label></td>
+    </tr>
+    <tr>
+      <td>Quantity</td>
+      <td><label>
+        <input type="text" name="textfield4"  value = "{{ val.quantity }}"/>
+      </label></td>
+    </tr>
+    <tr>
+      <td>Language</td>
+      <td><label>
+        <input type="text" name="textfield5"  value = "{{ val.language }}"/>
+      </label></td>
+    </tr>
+    <tr>
+      <td colspan="2"><label>
+        <input type="submit" name="Submit" value="EDIT" class="btn btn-outline-success"/>
+      </label></td>
+    </tr>
+  </table>
+</form>
+</body>
+{% endblock %}
+

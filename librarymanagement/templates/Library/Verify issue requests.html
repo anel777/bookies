@@ -1,0 +1,50 @@
+{% extends 'Library/libraryindex.html' %}
+{% block body %}
+
+      <head>
+        <style>
+            .dark-striped-tables {
+  background-color: #2c3034; /* Dark background color */
+  border-radius: 20px; /* Rounded corners */
+  overflow: hidden; /* Hide the border-collapse separator */
+}
+
+.dark-striped-table th,
+.dark-striped-table td {
+  border: 10px solid #ffffff;
+  padding: 10px; /* Adjust padding as needed */
+  color: #FFFFFF;; /* Text color */
+}
+
+.dark-striped-table tbody tr:nth-child(odd) {
+  background-color: #2c3036; /* Striped background color for odd rows */
+}
+        </style>
+    </head>
+
+<body>
+<form id="form1" name="form1" method="post" action="verifyIssueRequests">
+  <table width="200" border="1" class="table dark-striped-tables table-striped table-dark" >
+    <tr>
+      <td>BookName</td>
+      <td>username</td>
+      <td>Return Date</td>
+      <td>Author</td>
+      <td>&nbsp;</td>
+    </tr>
+      {% for i in val %}
+    <tr>
+      <td> {{ i.LIBRARYBOOK.bookName }}&nbsp;</td>
+      <td>{{ i.USER.name }}&nbsp;</td>
+      <td>{{ i.returnDate }}&nbsp;</td>
+      <td>{{ i.LIBRARYBOOK.author }}&nbsp;</td>
+      <td><label><a href="reqAccepted/{{ i.id }}" class="btn btn-success"> Accept</a><br /> </label>
+      <label><a href="reqRejected/{{ i.id }}" class="btn btn-danger">Reject</a></label></td>
+    </tr>
+      {% endfor %}
+  </table>
+    <p style="color: red">Disclaimer : You can only renew the books for 2 weeks</p>
+</form>
+</body>
+{% endblock %}
+

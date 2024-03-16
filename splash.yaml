@@ -1,0 +1,13 @@
+flutter_native_splash:
+  color : #fffabf"
+  color_dark: "fffabf"
+  image : app/src/main/res/mipmap-hdpi/icon.png
+  image_dark : app/src/main/res/mipmap-hdpi/icon.png
+
+  android_12:
+    color: #fffabf"
+    color_dark: "fffabf"
+    image: app/src/main/res/mipmap-hdpi/icon.png
+    image_dark: app/src/main/res/mipmap-hdpi/icon.png
+
+    web : false
