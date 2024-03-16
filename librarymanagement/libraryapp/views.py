@@ -1,6 +1,7 @@
 from decimal import Decimal
 from datetime import datetime
 
+from django.db.models import Q
 from django.shortcuts import render, redirect  # temp
 from django.contrib.auth import login, logout  # temp
 from django.views.decorators.cache import cache_control  # temp
@@ -12,6 +13,8 @@ from libraryapp.models import *
 from django.core import serializers
 import json
 from django.http import JsonResponse
+
+
 
 
 def login(request):
@@ -551,6 +554,7 @@ def and_login(request):
 
 def and_registration(request):
     try:
+        print(request.POST, "0000000000")
         name = request.POST['name']
         place = request.POST['place']
         post = request.POST['post']
@@ -590,7 +594,7 @@ def and_registration(request):
         ob1.save()
         return JsonResponse({"task": "ok"})
     except Exception as e:
-        print(e,"======================")
+        print(e, "======================")
         return JsonResponse({"task": "na"})
 
 
@@ -603,7 +607,7 @@ def and_viewCart(request):
         for i in ob:
             data = {'book': i.BOOKSTALLBOOKS.name, 'quantity': i.quantity, 'total': i.ORDER.total,
                     'genre': i.BOOKSTALLBOOKS.genre, 'author': i.BOOKSTALLBOOKS.author,
-                    'id': i.id}
+                    'id': i.id, 'place': i.BOOKSTALLBOOKS.BOOKSTALL.place, 'phone': i.BOOKSTALLBOOKS.BOOKSTALL.phone, 'rate' : i.BOOKSTALLBOOKS.rate}
             mdata.append(data)
             print(mdata)
         return JsonResponse({"status": "ok", "data": mdata})
@@ -627,24 +631,41 @@ def and_preBook(request):
     except Exception as e:
         return JsonResponse({"task": "na"})
 
+
 def and_addToCart(request):
-    print(request.POST, "00000000000000000---------")
     quantity = request.POST['quantity']
     lid = request.POST['lid']
     amount = request.POST['amount']
     bid = request.POST['bid']
     amount_decimal = Decimal(amount)
-    ob = ordersTable()
-    ob.total = amount_decimal
-    ob.status = 'cart'
-    ob.date = datetime.today()
-    ob.USER = userTable.objects.get(LOGIN__id=lid)
-    ob.save()
 
-    ob1 = orderItemsTable()
-    ob1.quantity = quantity
-    ob1.BOOKSTALLBOOKS = bookStallBooksTable.objects.get(id=bid)
-    ob1.ORDER = ob
+    ob3 = orderItemsTable.objects.filter(BOOKSTALLBOOKS__id =bid)
+    if len(ob3) ==0 :
+
+        ob = ordersTable()
+        ob.total = amount_decimal
+        ob.status = 'cart'
+        ob.date = datetime.today()
+        ob.USER = userTable.objects.get(LOGIN__id=lid)
+        ob.save()
+
+        ob1 = orderItemsTable()
+        ob1.quantity = quantity
+        ob1.BOOKSTALLBOOKS = bookStallBooksTable.objects.get(id=bid)
+        ob1.ORDER = ob
+        ob1.save()
+
+    else :
+        ob1 = orderItemsTable.objects.get(BOOKSTALLBOOKS__id = bid)
+        print('quanity =', ob1.quantity , '+', quantity, "-------========")
+        int1 = int(ob1.quantity)
+        int2 = int(quantity)
+        result = int1 + int2
+        result_string = str(result)
+        ob1.quantity = result_string
+        print(ob1.quantity)
+        ob1.save()
+
 
     try:
         return JsonResponse({"task": "ok"})
@@ -671,13 +692,15 @@ def and_viewBooks(request):
     mdata0 = []
     mdata1 = []
     for i in ob:  # library
-        data = {'placeName' : i.LIBRARY.name ,'bookPlace' : i.LIBRARY.place,'bid': i.id, 'bookName': i.bookName, 'author': i.author, 'language': i.language, 'genre': i.genre,
+        data = {'placeName': i.LIBRARY.name, 'bookPlace': i.LIBRARY.place, 'bid': i.id, 'bookName': i.bookName,
+                'author': i.author, 'language': i.language, 'genre': i.genre,
                 'type': "Library", 'rate': 0.00}
         mdata0.append(data)
         print(mdata0)
 
     for i in ob1:  # bookstall
-        data = {'placeName' : i.BOOKSTALL.name, 'bookPlace' : i.BOOKSTALL.place, 'bid': i.id, 'bookName': i.name, 'author': i.author, 'language': i.language, 'genre': i.genre,
+        data = {'placeName': i.BOOKSTALL.name, 'bookPlace': i.BOOKSTALL.place, 'bid': i.id, 'bookName': i.name,
+                'author': i.author, 'language': i.language, 'genre': i.genre,
                 'type': "Bookstall", 'rate': i.rate}
         mdata1.append(data)
         print(mdata1)
@@ -688,27 +711,75 @@ def and_viewBooks(request):
     return JsonResponse({"status": "ok", "data": mdata0})
 
 
+def and_searchBooks(request):
+    print(request.POST)
+    j = request.POST['j']
+
+    ob = librayBookTable.objects.filter(
+        Q(genre__icontains=j) |
+        Q(bookName__icontains=j) |
+        Q(author__icontains=j) |
+        Q(language__icontains=j)
+    )
+
+    ob1 = bookStallBooksTable.objects.filter(
+        Q(genre__icontains=j) |
+        Q(name__icontains=j) |
+        Q(author__icontains=j) |
+        Q(language__icontains=j)
+    )
+    mdata0 = []
+    mdata1 = []
+    for i in ob:  # library
+        data = {'placeName': i.LIBRARY.name, 'bookPlace': i.LIBRARY.place, 'bid': i.id, 'bookName': i.bookName,
+                'author': i.author, 'language': i.language, 'genre': i.genre,
+                'type': "Library", 'rate': 0.00}
+        mdata0.append(data)
+
+    for i in ob1:  # bookstall
+        data = {'placeName': i.BOOKSTALL.name, 'bookPlace': i.BOOKSTALL.place, 'bid': i.id, 'bookName': i.name,
+                'author': i.author, 'language': i.language, 'genre': i.genre,
+                'type': "Bookstall", 'rate': i.rate}
+        mdata1.append(data)
+
+    mdata0.extend(mdata1)
+    print(mdata0)
+    return JsonResponse({'status': 'ok', "data" : mdata0})
+
+
 def and_viewOrderHistory(request):
     lid = request.POST['lid']
-    ob = ordersTable.objects.filter(USER__LOGIN__id=lid)
+    ob = orderItemsTable.objects.filter(ORDER__USER__LOGIN__id=lid)
     mdata = []
     for i in ob:
-        data = {'date': str(i.date), 'total': str(i.total), 'id': i.id}
+        data = {'date': str(i.ORDER.date), 'total': str(i.ORDER.total), 'id': i.ORDER.id, 'rate': i.BOOKSTALLBOOKS.rate,
+                'quantity': i.quantity, 'name': i.BOOKSTALLBOOKS.name,'genre': i.BOOKSTALLBOOKS.genre,'author': i.BOOKSTALLBOOKS.author }
         mdata.append(data)
     print(mdata)
     return JsonResponse({"status": "ok", "data": mdata})
 
 
-def ViewReviews(request):
-    lid = request.POST['lid']
-    ob = reviewTable.objects.all(USER__LOGIN__id=lid)
-    mdata = []
-    for i in ob:
-        data = {'USER': i.user, 'BOOK': i.book_name, 'review': i.review, 'rating': i.rating, 'date': i.date,
-                'id': i.id}
-        mdata.append(data)
-        print(mdata)
-    return JsonResponse({"status": "ok", "data": mdata})
+def and_viewReviews(request):
+    type = request.POST['type']
+    bid = request.POST['bid']
+    mdata0 = []
+    mdata1 = []
+    if type =='Bookstall':
+        ob = reviewTable.objects.filter(BOOK__id = bid)
+        for i in ob:  # library
+            data = {'review': i.review, 'date': i.date, 'rating': i.rating, 'user': i.USER.name}
+            mdata0.append(data)
+            print(mdata0)
+    else  :
+        ob1 = reviewTable2.objects.filter(BOOK__id = bid)
+        for i in ob1:  # bookstall
+            data = {'review': i.review, 'date': i.date, 'rating': i.rating, 'user': i.USER.name}
+            mdata1.append(data)
+            print(mdata1)
+
+    mdata0.extend(mdata1)
+    print(mdata0)
+    return JsonResponse({'status' : 'ok', 'data': mdata0})
 
 
 def ViewFeedbacks(request):
@@ -722,12 +793,15 @@ def ViewFeedbacks(request):
         print(mdata)
     return JsonResponse({"status": "ok", "data": mdata})
 
-
 def and_updateView(request):
+    print(request.POST , '================')
     lid = request.POST['lid']
+    ip = request.POST['ip']
     ob = userTable.objects.get(LOGIN__id=lid)
-    data = {'name': ob.name, 'email': ob.email, 'phone': str(ob.phone), 'post': ob.post, 'pin': str(ob.pin), 'place': ob.place,'img':ob.photo.url[1:]}
-    return JsonResponse(data)
+    ob1 = loginTable.objects.get(id = lid)
+    data = {'name': ob.name, 'email': ob.email, 'phone': str(ob.phone), 'post': ob.post, 'pin': str(ob.pin),
+            'place': ob.place, 'img': ip+ob.photo.url[1:], 'username' : ob1.username, 'password' : ob1.password}
+    return JsonResponse({'status' : 'ok', "data":data})
 
 
 def and_updateprofile(request):
@@ -764,11 +838,10 @@ def and_renew(request):
     for i in ob:
         data = {'bookName': i.LIBRARYBOOK.bookName, 'bookId': i.BOOKNUMBER.bookId, 'date': i.date,
                 'returnDate': i.returnDate, 'fine': i.fineAmount, 'status': i.status,
-                'id': i.id}
+                'id': i.id, 'genre' : i.LIBRARYBOOK.genre, 'author' : i.LIBRARYBOOK.author }
         mdata.append(data)
         print(mdata)
     return JsonResponse({"status": "ok", "data": mdata})
-
 
 def and_renewbtn(request):
     try:
@@ -780,6 +853,25 @@ def and_renewbtn(request):
     except Exception as e:
         return JsonResponse({"status": "na"})
 
+def and_reviewbtn(request):
+    try:
+        print(request.POST)
+        book_id = request.POST['bid']
+        user_id = request.POST['lid']
+        review = request.POST['review']
+        rating = request.POST['rating']
+
+        user = userTable.objects.get(LOGIN__id=user_id)
+        book = librayBookTable.objects.get(id=book_id)
+
+        review_obj = reviewTable2(USER=user, BOOK=book, review=review, rating=rating, date=datetime.today())
+        review_obj.save()
+
+        return JsonResponse({"status": "ok"})
+    except Exception as e:
+        print("------------",e)
+        return JsonResponse({"status": "na"})
+
 
 def and_bookstatus(request):
     lid = request.POST['lid']
@@ -787,7 +879,7 @@ def and_bookstatus(request):
     mdata = []
     for i in ob:
         data = {'bookName': i.LIBRARYBOOK.bookName, 'bookId': i.BOOKNUMBER.bookId, 'status': i.status,
-                'id': i.id}
+                'id': i.id, 'date': i.returnDate}
         mdata.append(data)
-        print(mdata)
+        print(i.returnDate, "----------+++++")
     return JsonResponse({"status": "ok", "data": mdata})

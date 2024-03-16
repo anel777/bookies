@@ -74,6 +74,13 @@ class librayBookTable(models.Model):
     quantity = models.BigIntegerField()
     language = models.CharField(max_length=24)
 
+class reviewTable2(models.Model):
+    USER = models.ForeignKey(userTable, on_delete = models.CASCADE)
+    BOOK = models.ForeignKey(librayBookTable, on_delete = models.CASCADE)
+    review = models.CharField(max_length = 120)
+    rating = models.FloatField()
+    date = models.DateField()
+
 class bookNumberTable(models.Model):
     LIBRARY_BOOK = models.ForeignKey(librayBookTable, on_delete=models.CASCADE)
     bookId = models.CharField(max_length=10)

@@ -358,14 +358,13 @@ class _RenewState extends State<Renew> {
         showDialog(
           context: context,
           builder: (context) {
-            return Container(
-              height: 100,
-              width: 130,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
-              child: Text(
-                'Review Submitted!',
-                style: TextStyle(color: Colors.green),
+            return Center(
+              child: Container(
+                height: 10,
+                width: 10,
+                decoration: BoxDecoration(
+                    color: Colors.green[200],
+                    borderRadius: BorderRadius.circular(20)),
               ),
             );
           },
