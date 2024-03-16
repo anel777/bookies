@@ -101,7 +101,9 @@ urlpatterns = [
     path('and_addToCart', views.and_addToCart, name='and_addToCart'),
     path('and_preBook', views.and_preBook, name='and_preBook'),
     path('and_renew', views.and_preBook, name='and_renew'),
+    path('and_viewReviews', views.and_viewReviews, name='and_viewReviews'),
     path('and_reviewbtn', views.and_reviewbtn, name='and_reviewbtn'),
     path('and_renewbtn', views.and_reviewbtn, name='and_renewbtn'),
+    path('and_cartbtn', views.and_cartbtn, name='and_cartbtn'),
 
 ]

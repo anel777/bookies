@@ -50,6 +50,7 @@ class _cartState extends State<cart> {
             'author': item['author'].toString(),
             'place': item['place'].toString(),
             'phone': item['phone'].toString(),
+            'oid': item['oid'].toString(),
           });
         }
 
@@ -74,31 +75,69 @@ class _cartState extends State<cart> {
       ),
       body: Builder(
         builder: (BuildContext context) {
-          return Container(
-            child: ListView.builder(
-              itemCount: cartItems.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  padding: EdgeInsets.all(40),
-                  height: 400,
-                  width: 400,
-                  child: FlipCard(
-                    direction: FlipDirection.HORIZONTAL,
-                    front: _buildCard(
-                      cartItems[index]['book'],
-                      cartItems[index]['genre'],
-                      cartItems[index]['author'],
-                      cartItems[index]['total'],
-                    ),
-                    back: _buildCard2(
-                      cartItems[index]['phone'],
-                      cartItems[index]['place'],
-                      cartItems[index]['quantity'],
-                    ),
+          return Column(
+            children: [
+              Expanded(
+                flex: 6,
+                child: Container(
+                  child: ListView.builder(
+                    itemCount: cartItems.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        padding: EdgeInsets.all(40),
+                        height: 400,
+                        width: 400,
+                        child: FlipCard(
+                          direction: FlipDirection.HORIZONTAL,
+                          front: _buildCard(
+                            cartItems[index]['book'],
+                            cartItems[index]['genre'],
+                            cartItems[index]['author'],
+                            cartItems[index]['total'],
+                          ),
+                          back: _buildCard2(
+                            cartItems[index]['phone'],
+                            cartItems[index]['place'],
+                            cartItems[index]['quantity'],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+              Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30, bottom: 30),
+                    child: Container(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          confirmButton(
+                              context, cartItems[0]['oid'].toString());
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.green[300]!), // Set background color
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  15.0), // Set rounded corners
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          'Confirm',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 2),
+                        ),
+                      ),
+                    ),
+                  ))
+            ],
           );
         },
       ),
@@ -256,5 +295,26 @@ class _cartState extends State<cart> {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );
+  }
+
+  void confirmButton(BuildContext context, String oid) async {
+    try {
+      final pref = await SharedPreferences.getInstance();
+      String ip = pref.getString("url").toString();
+
+      String url = ip + "and_cartbtn";
+      var data = await http.post(Uri.parse(url), body: {'oid': oid});
+
+      var jsondata = json.decode(data.body);
+      String status = jsondata['status'];
+
+      if (status == "ok") {
+        print('Success');
+      } else {
+        print('FAILED==============');
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 }

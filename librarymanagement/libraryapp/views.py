@@ -607,7 +607,7 @@ def and_viewCart(request):
         for i in ob:
             data = {'book': i.BOOKSTALLBOOKS.name, 'quantity': i.quantity, 'total': i.ORDER.total,
                     'genre': i.BOOKSTALLBOOKS.genre, 'author': i.BOOKSTALLBOOKS.author,
-                    'id': i.id, 'place': i.BOOKSTALLBOOKS.BOOKSTALL.place, 'phone': i.BOOKSTALLBOOKS.BOOKSTALL.phone, 'rate' : i.BOOKSTALLBOOKS.rate}
+                    'id': i.id, 'place': i.BOOKSTALLBOOKS.BOOKSTALL.place, 'phone': i.BOOKSTALLBOOKS.BOOKSTALL.phone, 'rate' : i.BOOKSTALLBOOKS.rate, 'oid' : i.ORDER.id}
             mdata.append(data)
             print(mdata)
         return JsonResponse({"status": "ok", "data": mdata})
@@ -640,7 +640,7 @@ def and_addToCart(request):
     amount_decimal = Decimal(amount)
 
     ob3 = orderItemsTable.objects.filter(BOOKSTALLBOOKS__id =bid)
-    if len(ob3) ==0 :
+    if len(ob3) == 0:
 
         ob = ordersTable()
         ob.total = amount_decimal
@@ -662,10 +662,20 @@ def and_addToCart(request):
         int2 = int(quantity)
         result = int1 + int2
         result_string = str(result)
-        ob1.quantity = result_string
-        print(ob1.quantity)
-        ob1.save()
 
+        print('total =', ob1.ORDER.total , '+', amount_decimal, "-------========")
+        tot1 = int(ob1.ORDER.total)
+        tot2 = int(amount_decimal)
+        totRes = tot1 + tot2
+        totRes_string = str(totRes)
+
+        ob1.quantity = result_string
+        ob1.ORDER.total = totRes_string
+        print(ob1.quantity)
+        print(ob1.ORDER.total)
+
+        ob1.ORDER.save()
+        ob1.save()
 
     try:
         return JsonResponse({"task": "ok"})
@@ -752,9 +762,12 @@ def and_viewOrderHistory(request):
     ob = orderItemsTable.objects.filter(ORDER__USER__LOGIN__id=lid)
     mdata = []
     for i in ob:
-        data = {'date': str(i.ORDER.date), 'total': str(i.ORDER.total), 'id': i.ORDER.id, 'rate': i.BOOKSTALLBOOKS.rate,
-                'quantity': i.quantity, 'name': i.BOOKSTALLBOOKS.name,'genre': i.BOOKSTALLBOOKS.genre,'author': i.BOOKSTALLBOOKS.author }
-        mdata.append(data)
+        if i.ORDER.status != "cart":
+            data = {'date': str(i.ORDER.date), 'total': str(i.ORDER.total), 'id': i.ORDER.id,
+                    'rate': i.BOOKSTALLBOOKS.rate,
+                    'quantity': i.quantity, 'name': i.BOOKSTALLBOOKS.name, 'genre': i.BOOKSTALLBOOKS.genre,
+                    'author': i.BOOKSTALLBOOKS.author}
+            mdata.append(data)
     print(mdata)
     return JsonResponse({"status": "ok", "data": mdata})
 
@@ -883,3 +896,13 @@ def and_bookstatus(request):
         mdata.append(data)
         print(i.returnDate, "----------+++++")
     return JsonResponse({"status": "ok", "data": mdata})
+
+def and_cartbtn(request):
+    try:
+        oid = request.POST['oid']
+        ob1 = ordersTable.objects.get(id=oid)
+        ob1.status = 'order'
+        ob1.save()
+        return JsonResponse({"status": "ok"})
+    except Exception as e:
+        return JsonResponse({"status": "na"})
