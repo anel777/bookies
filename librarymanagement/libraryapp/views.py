@@ -632,57 +632,6 @@ def and_preBook(request):
         return JsonResponse({"task": "na"})
 
 
-def and_addToCart(request):
-    quantity = request.POST['quantity']
-    lid = request.POST['lid']
-    amount = request.POST['amount']
-    bid = request.POST['bid']
-    amount_decimal = Decimal(amount)
-
-    ob3 = orderItemsTable.objects.filter(BOOKSTALLBOOKS__id =bid)
-    if len(ob3) == 0:
-
-        ob = ordersTable()
-        ob.total = amount_decimal
-        ob.status = 'cart'
-        ob.date = datetime.today()
-        ob.USER = userTable.objects.get(LOGIN__id=lid)
-        ob.save()
-
-        ob1 = orderItemsTable()
-        ob1.quantity = quantity
-        ob1.BOOKSTALLBOOKS = bookStallBooksTable.objects.get(id=bid)
-        ob1.ORDER = ob
-        ob1.save()
-
-    else :
-        ob1 = orderItemsTable.objects.get(BOOKSTALLBOOKS__id = bid)
-        print('quanity =', ob1.quantity , '+', quantity, "-------========")
-        int1 = int(ob1.quantity)
-        int2 = int(quantity)
-        result = int1 + int2
-        result_string = str(result)
-
-        print('total =', ob1.ORDER.total , '+', amount_decimal, "-------========")
-        tot1 = int(ob1.ORDER.total)
-        tot2 = int(amount_decimal)
-        totRes = tot1 + tot2
-        totRes_string = str(totRes)
-
-        ob1.quantity = result_string
-        ob1.ORDER.total = totRes_string
-        print(ob1.quantity)
-        print(ob1.ORDER.total)
-
-        ob1.ORDER.save()
-        ob1.save()
-
-    try:
-        return JsonResponse({"task": "ok"})
-    except Exception as e:
-        return JsonResponse({"task": "na"})
-
-
 def and_viewFineAndPayments(request):
     lid = request.POST['lid']
     ob = issueTable.objects.filter(USER__LOGIN__id=lid)
@@ -906,3 +855,39 @@ def and_cartbtn(request):
         return JsonResponse({"status": "ok"})
     except Exception as e:
         return JsonResponse({"status": "na"})
+
+
+def and_addToCart(request):
+    try:
+        print(request.POST, '++++++++')
+        quantity = int(request.POST['quantity'])
+        lid = request.POST['lid']
+        amount = Decimal(request.POST['amount'])
+        bid = request.POST['bid']
+
+        order_item = orderItemsTable.objects.filter(BOOKSTALLBOOKS__id=bid).first()
+
+        if order_item is None:
+            # If the item does not exist in the cart, create a new order and order item
+            user = userTable.objects.get(LOGIN__id=lid)
+            new_order = ordersTable.objects.create(
+                USER=user,
+                total=amount,
+                status='cart',
+                date=datetime.today()
+            )
+            orderItemsTable.objects.create(
+                quantity=quantity,
+                BOOKSTALLBOOKS=bookStallBooksTable.objects.get(id=bid),
+                ORDER=new_order
+            )
+        else:
+            # If the item exists in the cart, update the quantity and total
+            order_item.quantity += quantity
+            order_item.ORDER.total += amount
+            order_item.ORDER.save()
+            order_item.save()
+
+        return JsonResponse({"task": "ok"})
+    except Exception as e:
+        return JsonResponse({"task": "na"})

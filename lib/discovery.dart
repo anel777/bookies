@@ -975,7 +975,7 @@ class _discoveryState extends State<discovery> {
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {
-                        print("Error");
+                        print("Error : $status");
                       }
                     },
                     child: Container(
