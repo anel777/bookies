@@ -963,6 +963,7 @@ class _discoveryState extends State<discovery> {
                           'bid': bid_[index],
                         },
                       );
+                      print(data);
 
                       var jsonData = json.decode(data.body);
                       String status = jsonData['task'].toString();

@@ -311,11 +311,45 @@ class _cartState extends State<cart> {
 
       if (status == "ok") {
         print('Success');
+        _showSuccessDialog(context);
       } else {
         print('FAILED==============');
       }
     } catch (e) {
       print("Error: $e");
     }
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+            height: 100,
+            width: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 50,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Ordered Successfully",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

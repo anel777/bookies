@@ -51,6 +51,7 @@
       <td>Date </td>
       <td>Status</td>
       <td>&nbsp;</td>
+        <td>&nbsp;</td>
     </tr>
       {% for i in val %}
     <tr>
@@ -58,8 +59,15 @@
       <td>&nbsp;{{ i.total }}</td>
       <td>&nbsp;{{ i.date }}</td>
       <td>&nbsp;{{ i.status }}</td>
-      <td><a href="viewBooks/{{ i.id }}"class="btn btn-outline-success">View Books </a></td>
-    </tr>
+      <td><a href="viewBooks/{{ i.id }}"class="btn btn-outline-warning">View Books </a></td>
+        <td>
+            {% if i.status == 'order' %}
+              <a href="deliveredBtn/{{ i.id }}" class="btn btn-success">Deliver</a>
+          {% else %}
+              <p class="btn btn-outline-success"> Delivered </p>
+          {% endif %}
+        </td>
+       </tr>
       {% endfor %}
   </table>
 </form>	

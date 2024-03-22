@@ -60,6 +60,7 @@ urlpatterns = [
     path('viewBooks/<int:id>', views.viewBooks, name='viewBooks'),
     path('viewOrdersAndPayment', views.viewOrdersAndPayment, name='viewOrdersAndPayment'),
     path('bookStallRegistrationCode', views.bookStallRegistrationCode, name='bookStallRegistrationCode'),
+    path('deliveredBtn/<int:id>', views.deliveredBtn, name='deliveredBtn'),
 
     # library path
     path('libraryHome', views.libraryHome, name='libraryHome'),
@@ -85,6 +86,10 @@ urlpatterns = [
     path('viewPreBooking', views.viewPreBooking, name='viewPreBooking'),
     path('viewPreBookingSearch', views.viewPreBookingSearch, name='viewPreBookingSearch'),
     path('libraryRegistrationCode', views.libraryRegistrationCode, name='libraryRegistrationCode'),
+    path('Renewlist', views.Renewlist, name='Renewlist'),
+    path('finePaid/<int:id>', views.finePaid, name='finePaid'),
+    path('issuedBtn/<int:id>', views.issuedBtn, name='issuedBtn'),
+    path('overDue', views.overDue, name='overDue'),
 
     #Android
     path('and_login', views.and_login, name='and_login'),
@@ -105,5 +110,6 @@ urlpatterns = [
     path('and_reviewbtn', views.and_reviewbtn, name='and_reviewbtn'),
     path('and_renewbtn', views.and_reviewbtn, name='and_renewbtn'),
     path('and_cartbtn', views.and_cartbtn, name='and_cartbtn'),
+    path('and_searchBooks', views.and_searchBooks, name='and_searchBooks'),
 
 ]

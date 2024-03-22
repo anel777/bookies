@@ -1,5 +1,5 @@
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 from django.db.models import Q
 from django.shortcuts import render, redirect  # temp
@@ -249,8 +249,10 @@ def bookStallRegistrationCode(request):
     fsave = fs.save(photo.name, photo)
     lattitude = request.POST['textfield9']
     longitude = request.POST['textfield10']
+    lic = request.POST['textfield13']
     username = request.POST['textfield11']
     password = request.POST['textfield12']
+
 
     ob = loginTable()
     ob.username = username
@@ -260,6 +262,7 @@ def bookStallRegistrationCode(request):
 
     ob1 = bookstallTable()
     ob1.name = name
+    ob1.lic = lic
     ob1.ownerName = ownerName
     ob1.place = place
     ob1.post = post
@@ -310,6 +313,14 @@ def viewOrdersAndPayment(request):
         list1.append(i.ORDER.id)
     order_obj = ordersTable.objects.filter(id__in=list1)
     return render(request, "Bookstall/View Orders and payment.html", {'val': order_obj})
+
+
+def deliveredBtn(request, id):
+    ob = ordersTable.objects.get(id=id)
+    ob.status = 'delivered'
+    ob.save()
+    return HttpResponse('''<script>alert("Accepted!");window.location="/viewOrdersAndPayment"</script>''')
+
 
 
 # //////////////////////LIBRARY//////////////////////////////////
@@ -408,6 +419,7 @@ def libraryRegistrationCode(request):
     email = request.POST['textfield5']
     post = request.POST['textfield6']
     pin = request.POST['textfield7']
+    lic = request.POST['textfield11']
     photo = request.FILES['file']
     fs = FileSystemStorage()
     fsave = fs.save(photo.name, photo)
@@ -422,6 +434,7 @@ def libraryRegistrationCode(request):
 
     ob1 = libraryTable()
     ob1.name = name
+    ob1.lic = lic
     ob1.place = place
     ob1.phone = phone
     ob1.date = datetime.today()
@@ -496,10 +509,54 @@ def verifyIssueRequests(request):
     return render(request, 'Library/Verify issue requests.html', {'val': ob})
 
 
+
+def overDue():
+    # Get today's date
+    today = date.today()
+
+    # Get all the issue records where today's date exceeds returnDate
+    overdue_issues = issueTable.objects.filter(returnDate__lt=today, status='issued')
+
+    # Iterate over each overdue issue and add payment record
+    for issue in overdue_issues:
+        # Calculate fine amount (for example, let's say it's $5 per day overdue)
+        days_overdue = (today - issue.returnDate).days
+        fine_amount = days_overdue * 40  # Adjust this calculation as per your requirement
+
+        existing_payment = paymentTable.objects.filter(ISSUE=issue).first()
+
+        if existing_payment.status != 'paid':
+            # Update the existing payment record's fine amount
+            existing_payment.amount = fine_amount
+            existing_payment.date = today
+            existing_payment.status = 'unpaid'  # Set the default status as 'unpaid'
+            existing_payment.save()
+        else:
+            # Create payment record
+            payment = paymentTable.objects.create(
+                ISSUE=issue,
+                amount=fine_amount,
+                date=today,
+                status='unpaid'  # Set the default status as 'unpaid'
+            )
+        issue.save()
+
+        # Print a message or perform any additional action if needed
+        print("Payment added for overdue book: Issue ID {issue.id}, Amount: {fine_amount}")
+
+
+
+def Renewlist(request):
+    ob = paymentTable.objects.all()
+    overDue();
+    return render(request, 'Library/list.html', {'val': ob})
+
+
 # To accept the Issue requests & Reject
 def reqAccepted(request, id):
     ob = issueTable.objects.get(id=id)
     ob.status = 'renewed'
+    ob.returnDate += timedelta(weeks=2)
     ob.save()
     return HttpResponse('''<script>alert("Accepted!");window.location="/verifyIssueRequests"</script>''')
 
@@ -509,6 +566,12 @@ def reqRejected(request, id):
     ob.status = 'Rejected'
     ob.save()
     return HttpResponse('''<script>alert("Rejected!");window.location="/verifyIssueRequests"</script>''')
+
+def finePaid(request, id):
+    ob = paymentTable.objects.get(id=id)
+    ob.status = 'paid'
+    ob.save()
+    return HttpResponse('''<script>alert("Accepted!");window.location="/Renewlist"</script>''')
 
 
 def viewFineAndPayment(request):
@@ -532,6 +595,12 @@ def viewPreBookingSearch(request):
     ob = preBookingTable.objects.filter(LIBRARYBOOK__bookName__istartswith=param)
     return render(request, 'Library/View pre booking.html', {'val': ob})
 
+
+def issuedBtn(request, id):
+    ob = preBookingTable.objects.get(id=id)
+    ob.status = 'issued'
+    ob.save()
+    return HttpResponse('''<script>alert("Accepted!");window.location="/viewPreBooking"</script>''')
 
 ###########################Android#########################################
 
@@ -567,7 +636,7 @@ def and_registration(request):
         timestr = datetime.now().strftime("%Y%m%d-%H%M%S")
         print(timestr)
         a = base64.b64decode(photo)
-        fh = open(r"C:\Users\makto\PycharmProjects\librarymanagement\media\\" + timestr + ".jpg", "wb")
+        fh = open(r"C:\Users\anlmc\Downloads\Bookies\Bookies\librarymanagement\media\\" + timestr + ".jpg", "wb")
         path = timestr + ".jpg"
         fh.write(a)
         fh.close()
@@ -605,7 +674,7 @@ def and_viewCart(request):
         ob = orderItemsTable.objects.filter(ORDER__status='cart', ORDER__USER__LOGIN__id=lid)
         mdata = []
         for i in ob:
-            print(i.quantity , 'x' , i.BOOKSTALLBOOKS.rate, 'xxxxxxxxx' , int(i.quantity) * i.BOOKSTALLBOOKS.rate)
+            print(i.BOOKSTALLBOOKS.rate, '++',i.ORDER.total, '++++++')
             data = {'book': i.BOOKSTALLBOOKS.name, 'quantity': i.quantity, 'total': i.ORDER.total, 'rate' : int(i.quantity) * i.BOOKSTALLBOOKS.rate,
                     'genre': i.BOOKSTALLBOOKS.genre, 'author': i.BOOKSTALLBOOKS.author,
                     'id': i.id, 'place': i.BOOKSTALLBOOKS.BOOKSTALL.place, 'phone': i.BOOKSTALLBOOKS.BOOKSTALL.phone, 'oid' : i.ORDER.id}
@@ -635,7 +704,7 @@ def and_preBook(request):
 
 def and_addToCart(request):
     try:
-        print(request.POST, '++++++++')
+        print(request.POST, '+++++++ADD+')
         quantity = int(request.POST['quantity'])
         lid = request.POST['lid']
         amount = Decimal(request.POST['amount'])
@@ -653,6 +722,7 @@ def and_addToCart(request):
                     status='cart',
                     date=datetime.today()
                 )
+                new_order.total = 0
             else:
                 new_order=order_id[0]
 
@@ -662,6 +732,7 @@ def and_addToCart(request):
                 ORDER=new_order
             )
             new_order.total += amount
+            print("new_order.total = ", new_order.total, " + ", amount )
             new_order.save()
 
         else:
@@ -680,11 +751,12 @@ def and_addToCart(request):
 
 def and_viewFineAndPayments(request):
     lid = request.POST['lid']
-    ob = issueTable.objects.filter(USER__LOGIN__id=lid)
+    print(request.POST)
+    ob = paymentTable.objects.filter(ISSUE__USER__LOGIN__id=lid, status='unpaid')
     mdata = []
     for i in ob:
-        data = {'fine': i.fineAmount, 'bookNumber': i.BOOKNUMBER_id, 'status': i.status, 'rDate': i.returnDate,
-                'id': i.id}
+        data = {'fine': i.amount, 'bookNumber': i.ISSUE.BOOKNUMBER.bookId, 'status': i.status, 'rDate': i.ISSUE.returnDate,
+                'id': i.id, 'bookName' : i.ISSUE.LIBRARYBOOK.bookName}
         mdata.append(data)
         print(mdata)
     return JsonResponse({"status": "ok", "data": mdata})
@@ -761,7 +833,7 @@ def and_viewOrderHistory(request):
             data = {'date': str(i.ORDER.date), 'total': str(i.ORDER.total), 'id': i.ORDER.id,
                     'rate': i.BOOKSTALLBOOKS.rate,
                     'quantity': i.quantity, 'name': i.BOOKSTALLBOOKS.name, 'genre': i.BOOKSTALLBOOKS.genre,
-                    'author': i.BOOKSTALLBOOKS.author}
+                    'author': i.BOOKSTALLBOOKS.author, 'status' : i.ORDER.status}
             mdata.append(data)
     print(mdata)
     return JsonResponse({"status": "ok", "data": mdata})
