@@ -225,8 +225,7 @@ class _RenewState extends State<Renew> {
                         //Container3 -> Buttons
                         GestureDetector(
                           onTap: () {
-                            ReviewPopUp(
-                                context, bookDetails[count]['issueid']!);
+                            ReviewPopUp(context, bookDetails[count]['bookId']!);
                           },
                           child: Container(
                             padding: EdgeInsets.all(20),
@@ -355,21 +354,8 @@ class _RenewState extends State<Renew> {
       String status = jsondata['status'];
 
       if (status == "ok") {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return Container(
-              height: 100,
-              width: 130,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
-              child: Text(
-                'Review Submitted!',
-                style: TextStyle(color: Colors.green),
-              ),
-            );
-          },
-        );
+        print("Success");
+        _showSuccessDialog(context);
       } else {
         showDialog(
           context: context,
@@ -519,6 +505,39 @@ class _RenewState extends State<Renew> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 2),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+            height: 100,
+            width: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 50,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Reviewed Successfully",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],

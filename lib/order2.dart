@@ -48,6 +48,7 @@ class _OrdersState extends State<Orders> {
             'date': item['date'].toString(),
             'total': item['total'].toString(),
             'id': item['id'].toString(),
+            'status': item['status'].toString(),
           });
         }
 
@@ -133,7 +134,7 @@ class _OrdersState extends State<Orders> {
               child: Column(
                 children: [
                   Expanded(
-                    flex: 1,
+                    flex: 3,
                     child: Container(
                       alignment: Alignment.bottomCenter,
                       padding: EdgeInsets.all(20),
@@ -172,7 +173,35 @@ class _OrdersState extends State<Orders> {
                                 ),
                               ),
                             ),
-                          )
+                          ),
+                          Container(
+                            //Order status
+                            // color: Colors.orange,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  order['status'] == 'order'
+                                      ? Icons.airplanemode_active
+                                      : Icons.check_box,
+                                  color: order['status'] == 'order'
+                                      ? Colors.lightBlue
+                                      : Colors.green,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '${order['status']}ed',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'mont',
+                                    letterSpacing: 2,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -185,7 +214,7 @@ class _OrdersState extends State<Orders> {
                     endIndent: 40,
                   ),
                   Expanded(
-                    flex: 4,
+                    flex: 10,
                     child: Container(
                       padding: EdgeInsets.all(10),
                       //ListView of the items
@@ -350,7 +379,7 @@ class _OrdersState extends State<Orders> {
                     endIndent: 40,
                   ),
                   Expanded(
-                    flex: 1,
+                    flex: 2,
                     child: Container(
                       //Total Amount
                       // color: Colors.yellow,

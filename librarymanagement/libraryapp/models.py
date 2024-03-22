@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class loginTable(models.Model):
-    username = models.CharField(max_length = 12)
-    password = models.CharField(max_length = 12)
+    username = models.CharField(max_length = 24)
+    password = models.CharField(max_length = 24)
     type = models.CharField(max_length = 12)
 
 class userTable(models.Model):
@@ -13,12 +13,13 @@ class userTable(models.Model):
     post = models.CharField(max_length = 12)
     pin = models.CharField(max_length=10)
     phone = models.BigIntegerField()
-    email = models.CharField(max_length = 12)
+    email = models.CharField(max_length = 40)
     photo = models.FileField()
 
 class bookstallTable(models.Model):
     LOGIN = models.ForeignKey(loginTable, on_delete = models.CASCADE)
     name = models.CharField(max_length = 12)
+    lic = models.CharField(max_length = 100)
     place = models.CharField(max_length = 12)
     ownerName = models.CharField(max_length = 12)
     phone = models.BigIntegerField()
@@ -33,6 +34,7 @@ class bookstallTable(models.Model):
 class libraryTable(models.Model):
     LOGIN = models.ForeignKey(loginTable, on_delete = models.CASCADE)
     name = models.CharField(max_length = 12)
+    lic = models.CharField(max_length = 100)
     place = models.CharField(max_length = 12)
     phone = models.BigIntegerField()
     date = models.DateField()
@@ -51,10 +53,10 @@ class feedbackTable(models.Model):
 
 class bookStallBooksTable(models.Model):
     BOOKSTALL = models.ForeignKey(bookstallTable, on_delete= models.CASCADE)
-    genre = models.CharField(max_length=12)
-    name = models.CharField(max_length=12)
-    author = models.CharField(max_length=12)
-    language = models.CharField(max_length=12)
+    genre = models.CharField(max_length=30)
+    name = models.CharField(max_length=30)
+    author = models.CharField(max_length=30)
+    language = models.CharField(max_length=30)
     rate = models.FloatField()
     stock = models.CharField(max_length=100)
 
@@ -69,10 +71,17 @@ class reviewTable(models.Model):
 class librayBookTable(models.Model):
     LIBRARY = models.ForeignKey(libraryTable, on_delete=models.CASCADE)
     genre = models.CharField(max_length = 24)
-    bookName = models.CharField(max_length=12)
+    bookName = models.CharField(max_length=30)
     author = models.CharField(max_length=24)
     quantity = models.BigIntegerField()
     language = models.CharField(max_length=24)
+
+class reviewTable2(models.Model):
+    USER = models.ForeignKey(userTable, on_delete = models.CASCADE)
+    BOOK = models.ForeignKey(librayBookTable, on_delete = models.CASCADE)
+    review = models.CharField(max_length = 120)
+    rating = models.FloatField()
+    date = models.DateField()
 
 class bookNumberTable(models.Model):
     LIBRARY_BOOK = models.ForeignKey(librayBookTable, on_delete=models.CASCADE)

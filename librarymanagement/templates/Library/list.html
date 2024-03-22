@@ -1,0 +1,60 @@
+{% extends 'Library/libraryindex.html' %}
+{% block body %}
+
+      <head>
+        <style>
+            .dark-striped-tables {
+  background-color: #2c3034; /* Dark background color */
+  border-radius: 20px; /* Rounded corners */
+  overflow: hidden; /* Hide the border-collapse separator */
+}
+
+.dark-striped-table th,
+.dark-striped-table td {
+  border: 10px solid #ffffff;
+  padding: 10px; /* Adjust padding as needed */
+  color: #FFFFFF;; /* Text color */
+}
+
+.dark-striped-table tbody tr:nth-child(odd) {
+  background-color: #2c3036; /* Striped background color for odd rows */
+}
+        </style>
+    </head>
+
+<body>
+<form id="form1" name="form1" method="post" action="Renewlist">
+  <table width="200" border="1" class="table dark-striped-tables table-striped table-dark" >
+    <tr>
+      <td>BookName</td>
+      <td>username</td>
+      <td>Return Date</td>
+      <td>Fine amount</td>
+      <td>Book ID</td>
+      <td>&nbsp;</td>
+    </tr>
+      {% for i in val %}
+    <tr>
+      <td> {{ i.ISSUE.LIBRARYBOOK.bookName }}&nbsp;</td>
+      <td>{{ i.ISSUE.USER.name }}&nbsp;</td>
+      <td>{{ i.ISSUE.returnDate }}&nbsp;</td>
+      <td>{% if i.status == 'paid'%}
+          --
+      {% else %}
+          {{ i.amount }}
+      {% endif %}</td>
+      <td>{{ i.ISSUE.BOOKNUMBER.bookId }}&nbsp;</td>
+      <td><label>
+          {% if i.status == 'unpaid' %}
+              <a href="finePaid/{{ i.id }}" class="btn btn-success">Pay</a>
+          {% else %}
+              <p class="btn btn-outline-success"> PAID </p>
+          {% endif %}
+          <br/> </label>
+    </tr>
+      {% endfor %}
+  </table>
+</form>
+</body>
+{% endblock %}
+

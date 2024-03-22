@@ -90,7 +90,7 @@ class _RenewStatusState extends State<RenewStatus> {
     IconData statusIcon;
 
     switch (status['status']) {
-      case 'rejected':
+      case 'Rejected':
         containerColor = Colors.red;
         statusIcon = Icons.close; // Cross mark icon for rejected
         break;
@@ -99,7 +99,7 @@ class _RenewStatusState extends State<RenewStatus> {
         statusIcon = Icons
             .mode_comment; // Comment or any other suitable icon for pending
         break;
-      case 'accepted':
+      case 'renewed':
         containerColor = Colors.green;
         statusIcon = Icons.bookmark; // Bookmark icon for accepted
         break;
