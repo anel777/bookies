@@ -225,8 +225,7 @@ class _RenewState extends State<Renew> {
                         //Container3 -> Buttons
                         GestureDetector(
                           onTap: () {
-                            ReviewPopUp(
-                                context, bookDetails[count]['issueid']!);
+                            ReviewPopUp(context, bookDetails[count]['bookId']!);
                           },
                           child: Container(
                             padding: EdgeInsets.all(20),

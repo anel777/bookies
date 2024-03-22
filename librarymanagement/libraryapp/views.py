@@ -916,7 +916,7 @@ def and_renew(request):
     ob = issueTable.objects.filter(USER__LOGIN__id=lid, status='issued')
     mdata = []
     for i in ob:
-        data = {'bookName': i.LIBRARYBOOK.bookName, 'bookId': i.BOOKNUMBER.bookId, 'date': i.date,
+        data = {'bookName': i.LIBRARYBOOK.bookName, 'bookId': i.LIBRARYBOOK.id, 'date': i.date,
                 'returnDate': i.returnDate, 'fine': i.fineAmount, 'status': i.status,
                 'id': i.id, 'genre' : i.LIBRARYBOOK.genre, 'author' : i.LIBRARYBOOK.author }
         mdata.append(data)
