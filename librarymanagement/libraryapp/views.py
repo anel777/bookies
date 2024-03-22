@@ -137,7 +137,7 @@ def viewBookAndOffers2(request):
 
 def viewReviewsAndRating(request):
     ob = bookstallTable.objects.all()
-    ob1 = reviewTable.objects.all()
+    ob1 = reviewTable2.objects.all()
     return render(request, 'Admin/views reviews and rating.html', {'data': ob, 'val': ob1})
 
 
