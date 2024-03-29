@@ -14,3 +14,10 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+#Initiate
+Navigate to 'librarymanagement/' to execute the command 'python manage.py runserver <your-ip-address>:5000'
+
+Access the application and enter '<your-ip-address>'.
+
+It is recommended to execute the SQL script prior to running this."
